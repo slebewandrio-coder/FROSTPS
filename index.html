@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FROST-PS</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:linear-gradient(180deg,#020617,#020617,#0a1b2e);
+color:white;
+text-align:center;
+overflow-x:hidden;
+}
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:60px 20px;
+}
+
+h1{
+font-size:70px;
+color:#7dd3fc;
+text-shadow:0 0 20px #38bdf8,0 0 40px #0ea5e9;
+margin-bottom:10px;
+}
+
+.desc{
+color:#c7eaff;
+font-size:18px;
+margin-bottom:40px;
+}
+
+.status{
+display:inline-block;
+padding:12px 25px;
+border-radius:12px;
+background:#071225;
+border:1px solid #38bdf8;
+color:#7dd3fc;
+margin:10px;
+font-size:18px;
+}
+
+.box{
+background:#071225;
+border:1px solid #1e3a5f;
+border-radius:14px;
+padding:25px;
+margin:25px 0;
+}
+
+.box h2{
+color:#7dd3fc;
+margin-bottom:10px;
+}
+
+.link{
+display:block;
+color:#38bdf8;
+margin-top:10px;
+word-break:break-all;
+}
+
+.copy{
+margin-top:15px;
+padding:10px 20px;
+border:none;
+border-radius:10px;
+background:#0ea5e9;
+color:white;
+cursor:pointer;
+}
+
+.copy:hover{
+background:#0284c7;
+}
+
+.footer{
+margin-top:40px;
+color:#7aa7c7;
+font-size:14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="snow"></canvas>
+
+<div class="container">
+
+<h1>FROST-PS</h1>
+
+<p class="desc">
+FROST-PS adalah Growtopia Private Server dengan gameplay stabil,
+komunitas aktif, dan berbagai fitur menarik.
+</p>
+
+<div id="status" class="status">
+Checking Server...
+</div>
+
+<div id="players" class="status">
+Players Online : 0
+</div>
+
+<div class="box">
+<h2>Download VHOST</h2>
+
+<a class="link" href="https://www.mediafire.com/file/z7qa77325pqtv56/FrostPS+(1).txt/file">
+https://www.mediafire.com/file/z7qa77325pqtv56/FrostPS+(1).txt/file
+</a>
+</div>
+
+<div class="box">
+<h2>PowerTunnel Android</h2>
+
+<a class="link" href="https://dash.gtps.cloud/android/10">
+https://dash.gtps.cloud/android/10
+</a>
+
+<button class="copy" onclick="copyText('https://dash.gtps.cloud/android/10')">
+Copy
+</button>
+</div>
+
+<div class="box">
+<h2>Windows Hosts</h2>
+
+<p>91.134.85.13 growtopia1.com</p>
+<p>91.134.85.13 growtopia2.com</p>
+<p>91.134.85.13 www.growtopia1.com</p>
+<p>91.134.85.13 www.growtopia2.com</p>
+
+<button class="copy" onclick="copyText(`91.134.85.13 growtopia1.com
+91.134.85.13 growtopia2.com
+91.134.85.13 www.growtopia1.com
+91.134.85.13 www.growtopia2.com`)">
+Copy
+</button>
+
+</div>
+
+<div class="box">
+<h2>SURGE5 iOS</h2>
+
+<a class="link" href="https://dash.gtps.cloud/ios/10">
+https://dash.gtps.cloud/ios/10
+</a>
+
+<button class="copy" onclick="copyText('https://dash.gtps.cloud/ios/10')">
+Copy
+</button>
+
+</div>
+
+<div class="footer">
+FROST-PS GTPS
+</div>
+
+</div>
+
+<script>
+
+function copyText(text){
+navigator.clipboard.writeText(text)
+alert("Copied")
+}
+
+const status=document.getElementById("status")
+const players=document.getElementById("players")
+
+fetch("https://api.mcsrvstat.us/2/91.134.85.13")
+.then(res=>res.json())
+.then(data=>{
+
+if(data.online){
+status.innerHTML="🟢 Server Online"
+players.innerHTML="Players Online : "+data.players.online
+}else{
+status.innerHTML="🔴 Server Offline"
+players.innerHTML="Players Online : 0"
+}
+
+})
+.catch(()=>{
+status.innerHTML="🟢 Server Online"
+players.innerHTML="Players Online : Unknown"
+})
+
+const canvas=document.getElementById("snow")
+const ctx=canvas.getContext("2d")
+
+canvas.width=window.innerWidth
+canvas.height=window.innerHeight
+
+let snow=[]
+
+for(let i=0;i<120;i++){
+snow.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+r:Math.random()*3,
+d:Math.random()*1
+})
+}
+
+function drawSnow(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height)
+
+ctx.fillStyle="white"
+ctx.beginPath()
+
+for(let i=0;i<snow.length;i++){
+let f=snow[i]
+ctx.moveTo(f.x,f.y)
+ctx.arc(f.x,f.y,f.r,0,Math.PI*2,true)
+}
+
+ctx.fill()
+moveSnow()
+
+}
+
+let angle=0
+
+function moveSnow(){
+
+angle+=0.01
+
+for(let i=0;i<snow.length;i++){
+
+let f=snow[i]
+
+f.y+=Math.cos(angle+f.d)+1+f.r/2
+f.x+=Math.sin(angle)*2
+
+if(f.x>canvas.width+5||f.x<-5||f.y>canvas.height){
+
+snow[i]={
+x:Math.random()*canvas.width,
+y:-10,
+r:f.r,
+d:f.d
+}
+
+}
+
+}
+
+}
+
+setInterval(drawSnow,33)
+
+</script>
+
+</body>
+  </html>
